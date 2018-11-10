@@ -12,7 +12,12 @@ struct mat3 {
     mat3 operator*(mat3 const& oth) const noexcept;
 
 };
-
+struct vec2
+{
+    float x, y;
+    vec2();
+    vec2(float _x, float _y);
+};
 struct vec3 {
     union
     {
@@ -22,6 +27,14 @@ struct vec3 {
             float x, y, z;
         };
     };
+    vec3() noexcept;
+    vec3(float, float, float) noexcept;
+    float &operator[](int i) noexcept;
+    float const &operator[](int i) const noexcept;
+    vec3 operator+(vec3 const &) const noexcept;
+    vec3 operator-(vec3 const &) const noexcept;
+    vec3 operator*(float) const noexcept;
+    vec3 operator/(float) const noexcept;
 };
 
 vec3 cross(vec3 const&v1, vec3 const&v2) noexcept;

@@ -14,10 +14,7 @@ extern "C"
 
 #include "geom.h"
 
-struct vec2
-{
-    float x, y;
-};
+
 
 //b g r a
 struct pix {
@@ -30,13 +27,13 @@ struct pix {
 struct vertex
 {
     vec3 pos;
-    pix c;
+    vec2 tex;
 };
 
 
 struct frame_buf {
     pix* content;
-    int height, lenght, high_v, lenght_v, fb;
+    int height, width, high_v, lenght_v, fb;
     frame_buf() ;
     ~frame_buf () ;
     pix* operator[] (int y_ind) noexcept;

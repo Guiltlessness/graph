@@ -16,17 +16,17 @@ frame_buf::frame_buf() {
     fb = open("/dev/fb0", O_WRONLY);
     struct fb_fix_screeninfo fsinfo;
     if(ioctl(fb, FBIOGET_FSCREENINFO, &fsinfo) < 0) {
-        write(1, "Хуита какаято", 26);
+        write(1, "Хуита какаято\n", 27);
     };
     struct fb_var_screeninfo vsinfo;
-    lenght = fsinfo.line_length / 4;
+    width = fsinfo.line_length / 4;
     height = fsinfo.smem_len /fsinfo.line_length;
     if(ioctl(fb, FBIOGET_VSCREENINFO, &vsinfo) < 0) {
-        write(1, "Хуита какаято", 26);
+        write(1, "Хуита какаято\n", 27);
     };
     high_v = vsinfo.yres /*/ vsinfo.bits_per_pixel*/;
     lenght_v = vsinfo.xres /*/ vsinfo.bits_per_pixel*/;
-    content = new pix[height * lenght];
+    content = new pix[height * width];
     close(fb);
 }
 frame_buf::~frame_buf() {
@@ -34,7 +34,7 @@ frame_buf::~frame_buf() {
 }
 
 pix* frame_buf::operator[] (int y_ind) noexcept {
-    return content + lenght * (high_v - y_ind - 1);
+    return content + width * (high_v - y_ind - 1);
 }
 
 void frame_buf::set_pixel(int x, int y, pix const& p) noexcept {
@@ -42,11 +42,11 @@ void frame_buf::set_pixel(int x, int y, pix const& p) noexcept {
 }
 
 void frame_buf::clear() noexcept {
-    wmemset((wchar_t*)content, 0, height * lenght);
+    wmemset((wchar_t*)content, 0, height * width);
 }
 
 void frame_buf::update() noexcept {
     int fb = open("/dev/fb0", O_WRONLY);
-    write(fb, content, height * lenght * 4);
+    write(fb, content, height * width * 4);
     close(fb);
 }

@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 
+
 mat3::mat3()
     : data {1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f}
 {}
@@ -43,13 +44,15 @@ vec3 cross(vec3 const&v1, vec3 const&v2) noexcept {
 }
 
 mat3 lookat(vec3 const &e3, vec3 const &up) noexcept {
+    const float tgalpha = 1.f;
+    const float distance = 2.f;
     mat3 ans;
     vec3 e1 = normalize(cross(up, e3));
     vec3 e2 = normalize(cross(e3, e1));
     for(int i = 0; i < 3; ++i)
-        ans.data[0][i] = e1.data[i];
+        ans.data[0][i] = e1.data[i] /*/ (-e3.data[i] + distance) * tgalpha*/;
     for(int i = 0; i < 3; ++i)
-        ans.data[1][i] = e2.data[i];
+        ans.data[1][i] = e2.data[i] /*/ (-e3.data[i] + distance) * tgalpha*/;
     for(int i = 0; i < 3; ++i)
         ans.data[2][i] = e3.data[i];
     return ans;
@@ -65,3 +68,42 @@ vec3 operator*(mat3 const&m, vec3 const&v) noexcept {
     }
     return out;
 }
+
+vec3::vec3() noexcept:
+    data{0.f, 0.f, 0.f}
+{}
+vec3::vec3(float a, float b, float c) noexcept:
+    data{a, b, c}
+{}
+vec3 vec3::operator+(vec3 const &v) const noexcept
+{
+    return vec3(x + v.x, y + v.y, z + v.z);
+}
+vec3 vec3::operator-(vec3 const &v) const noexcept
+{
+    return vec3(x - v.x, y - v.y, z - v.z);
+}
+vec3 vec3::operator*(float p) const noexcept
+{
+    return vec3(x * p, y * p, z * p);
+}
+vec3 vec3::operator/(float p) const noexcept
+{
+    return vec3(x / p, y / p, z / p);
+}
+float &vec3::operator[](int i) noexcept
+{
+    return data[i];
+}
+float const &vec3::operator[](int i) const noexcept
+{
+    return data[i];
+}
+vec2::vec2()
+    :x(0)
+    ,y(0)
+{}
+vec2::vec2(float _x, float _y)
+    :x(_x)
+    ,y(_y)
+{}

@@ -7,9 +7,11 @@ SOURCES += \
     src/frame_buf.cpp \
     src/main.cpp \
     src/pipeline.cpp \
-    src/geom.cpp
+    src/geom.cpp \
+    src/tga_t.cpp
 
 HEADERS += \ 
     src/frame_buf.h \
     src/pipeline.h \
-    src/geom.h
+    src/geom.h \
+    src/tga_t.h
