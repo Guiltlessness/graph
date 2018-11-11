@@ -11,6 +11,7 @@ class pipeline
     pix fragment_shader(vertex const&) noexcept;
     void rasterize(vertex const&, vertex const&, vertex const&) noexcept;
     bool z_test(int x, int y, float z) noexcept;
+    void bfculling(vertex const&, vertex const&, vertex const&) noexcept;
 
     float* z_buffer;
 public:
@@ -21,7 +22,7 @@ public:
     frame_buf *buf = nullptr;
     void draw(vertex const*, size_t const*, size_t) noexcept;
     void clear() noexcept;
-
+    void update() const noexcept;
     pipeline(tga_t const&, frame_buf* frb);
     ~pipeline();
 };

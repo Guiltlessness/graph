@@ -8,10 +8,12 @@ SOURCES += \
     src/main.cpp \
     src/pipeline.cpp \
     src/geom.cpp \
-    src/tga_t.cpp
+    src/tga_t.cpp \
+    src/mouse.cpp
 
 HEADERS += \ 
     src/frame_buf.h \
     src/pipeline.h \
     src/geom.h \
-    src/tga_t.h
+    src/tga_t.h \
+    src/mouse.h

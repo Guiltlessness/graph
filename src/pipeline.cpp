@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cwchar>
 
+static const bool bfc_on = true;
+
 
 pix mix(pix c1, pix c2, pix c3, float p, float q)
 {
@@ -80,12 +82,22 @@ void pipeline::rasterize(vertex const& v1, vertex const& v2, vertex const& v3) n
 void pipeline::draw(vertex const *verts, size_t const *inds, size_t size) noexcept
 {
     for(size_t i = 0u; i < size; i += 3)
-        rasterize
+        bfculling
             (
                 vertex_shader(verts[inds[i]]),
                 vertex_shader(verts[inds[i + 1]]),
                 vertex_shader(verts[inds[i + 2]])
             );
+}
+
+void pipeline::bfculling(vertex const& v1, vertex const& v2, vertex const& v3) noexcept {
+    if (bfc_on) {
+        bool isclockwise = ((v1.pos.x - v3.pos.x) * (v2.pos.y - v1.pos.y) - (v2.pos.x - v1.pos.x) * (v1.pos.y - v3.pos.y)) < 0;
+        if (isclockwise)
+            rasterize(v1, v2, v3);
+    } else {
+        rasterize(v1, v2, v3);
+}
 }
 
 pipeline::pipeline(tga_t const& img, frame_buf* frb)
@@ -114,4 +126,8 @@ bool pipeline::z_test(int x, int y, float z) noexcept {
 
 pipeline::~pipeline() {
     delete [] z_buffer;
+}
+
+void pipeline::update() const noexcept {
+    buf->update();
 }
