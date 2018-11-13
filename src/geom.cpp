@@ -1,7 +1,10 @@
 #include "geom.h"
+#include "frame_buf.h"
 
 #include <cassert>
 #include <cmath>
+#include <map>
+#include <vector>
 
 
 mat3::mat3()
@@ -107,3 +110,5 @@ vec2::vec2(float _x, float _y)
     :x(_x)
     ,y(_y)
 {}
+
+

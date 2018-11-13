@@ -79,6 +79,39 @@ void pipeline::rasterize(vertex const& v1, vertex const& v2, vertex const& v3) n
         }
 }
 
+static bool choose(int x1, int y1, int x2, int y2, int x_d, int y_d) {
+    return std::abs((y_d * x1 - y1 * x_d) * x2) <
+            std::abs((y_d * x2 - y2 * x_d) * x1);
+}
+
+static void make_line(frame_buf* buf, vertex const&v1, vertex const&v2) noexcept {
+    int w2 = (*buf).width / 2;
+    int h2 = (*buf).height / 2;
+    int v1_x = (v1.pos.x * h2 + w2);
+    int v2_x = (v2.pos.x * h2 + w2);
+    int v1_y = (v1.pos.y * h2 + h2);
+    int v2_y = (v2.pos.y * h2 + h2);
+    int x_min = std::max(0, std::min(v1_x, v2_x));
+    int y_min = std::max(0, std::min(v1_y, v2_y));
+    int x_max = std::min((*buf).width - 1, std::max(v1_x, v2_x));
+    int y_max = std::min((*buf).height - 1, std::max(v1_y, v2_y));
+    int x_d = v2_x - v1_x;
+    int y_d = v2_y - v1_y;
+    int way_x = 1;
+    int way_y = 1;
+    if (x_d < 0)
+        way_x *= -1;
+    if (y_d < 0)
+        way_y *= -1;
+    for(int x = v1_x, y = v1_y; x >= x_min && x <= x_max && y >= y_min && y <= y_max; ){
+        (*buf)[y][x] = pix(255,0,255,255);
+        if ( choose(x + way_x - v1_x, y - v1_y, x - v1_x, y - v1_y + way_y, x_d, y_d))
+            x += way_x;
+        else
+            y += way_y;
+    }
+}
+
 void pipeline::draw(vertex const *verts, size_t const *inds, size_t size) noexcept
 {
     for(size_t i = 0u; i < size; i += 3)
@@ -92,12 +125,16 @@ void pipeline::draw(vertex const *verts, size_t const *inds, size_t size) noexce
 
 void pipeline::bfculling(vertex const& v1, vertex const& v2, vertex const& v3) noexcept {
     if (bfc_on) {
-        bool isclockwise = ((v1.pos.x - v3.pos.x) * (v2.pos.y - v1.pos.y) - (v2.pos.x - v1.pos.x) * (v1.pos.y - v3.pos.y)) < 0;
-        if (isclockwise)
+        bool isclockwise = ((v1.pos.x - v3.pos.x) * (v2.pos.y - v1.pos.y) - (v2.pos.x - v1.pos.x) * (v1.pos.y - v3.pos.y)) > 0;
+        if (isclockwise) {
             rasterize(v1, v2, v3);
+        }
     } else {
         rasterize(v1, v2, v3);
-}
+    }
+//    make_line(buf, v1, v2);
+//    make_line(buf, v3, v2);
+//    make_line(buf, v1, v3);
 }
 
 pipeline::pipeline(tga_t const& img, frame_buf* frb)
@@ -130,4 +167,19 @@ pipeline::~pipeline() {
 
 void pipeline::update() const noexcept {
     buf->update();
+}
+
+
+void pipeline::draw_lines(vertex const*vs, size_t const*sizes, size_t len) noexcept {
+    for(uint i = 0; i < len; i += 3) {
+        make_line(buf,
+                  vertex_shader(vs[sizes[i]]),
+                  vertex_shader(vs[sizes[i + 1]]));
+        make_line(buf,
+                  vertex_shader(vs[sizes[i + 1]]),
+                  vertex_shader(vs[sizes[i + 2]]));
+        make_line(buf,
+                  vertex_shader(vs[sizes[i]]),
+                 vertex_shader(vs[sizes[i + 2]]));
+    }
 }

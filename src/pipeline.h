@@ -20,6 +20,7 @@ public:
     mat3 lookat_ex;
     tga_t const& texture;
     frame_buf *buf = nullptr;
+    void draw_lines(vertex const*, size_t const*, size_t) noexcept;
     void draw(vertex const*, size_t const*, size_t) noexcept;
     void clear() noexcept;
     void update() const noexcept;

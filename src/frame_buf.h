@@ -30,6 +30,8 @@ struct vertex
     vec2 tex;
 };
 
+bool operator < (vertex const& v1, vertex const& v2);
+
 
 struct frame_buf {
     pix* content;

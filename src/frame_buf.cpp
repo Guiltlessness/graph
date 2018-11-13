@@ -50,3 +50,9 @@ void frame_buf::update() noexcept {
     write(fb, content, height * width * 4);
     close(fb);
 }
+
+bool operator < (vertex const& v1, vertex const& v2) {
+    int i = 0;
+    for( ; i < 3 && (v1.pos[i] == v2.pos[i]); ++i);
+    return v1.pos[i] < v2.pos[i];
+}
