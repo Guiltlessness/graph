@@ -10,7 +10,8 @@ SOURCES += \
     src/geom.cpp \
     src/tga_t.cpp \
     src/mouse.cpp \
-    src/sphere.cpp
+    src/sphere.cpp \
+    src/keyboard.cpp
 
 HEADERS += \ 
     src/frame_buf.h \
@@ -18,4 +19,7 @@ HEADERS += \
     src/geom.h \
     src/tga_t.h \
     src/mouse.h \
-    src/sphere.h
+    src/sphere.h \
+    src/keyboard.h
+
+DISTFILES +=

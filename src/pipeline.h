@@ -7,17 +7,21 @@
 
 class pipeline
 {
+
+    float* z_buffer;
+    mat3 lookat_ex;
+
     vertex vertex_shader(vertex const&) noexcept;
     pix fragment_shader(vertex const&) noexcept;
     void rasterize(vertex const&, vertex const&, vertex const&) noexcept;
     bool z_test(int x, int y, float z) noexcept;
     void bfculling(vertex const&, vertex const&, vertex const&) noexcept;
 
-    float* z_buffer;
 public:
+    vec3 eye;
+    vec3 movement;
     vec3 campos;
     vec3 lighdir;
-    mat3 lookat_ex;
     tga_t const& texture;
     frame_buf *buf = nullptr;
     void draw_lines(vertex const*, size_t const*, size_t) noexcept;
@@ -25,6 +29,7 @@ public:
     void clear() noexcept;
     void update() const noexcept;
     pipeline(tga_t const&, frame_buf* frb);
+    void lookat(vec3 const &e3, vec3 const &up) noexcept;
     ~pipeline();
 };
 

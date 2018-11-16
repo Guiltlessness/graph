@@ -3,6 +3,7 @@
 #include "tga_t.h"
 #include "mouse.h"
 #include "sphere.h"
+#include "keyboard.h"
 
 #include <iostream>
 #include <cmath>
@@ -36,8 +37,8 @@ static size_t inds[] = {
     5, 7, 3,
     6, 7, 5,
     5, 4, 6,
-    5, 4, 0,
-    5, 0, 1,
+    5, 0, 4,
+    5, 1, 0,
     0, 2, 6,
     0, 6, 4
 };
@@ -48,7 +49,7 @@ int main()
 
     pipeline pl(img, &context);
     float phi = 0.f, theta = 0.f;
-    auto data = create_sphere(1.f, 4);
+    auto data = create_sphere(1.f, 3);
     while(true)
     {
         pl.clear();
@@ -59,10 +60,15 @@ int main()
             phi += e.xrel / 300.f;
             theta += e.yrel / 400.f;
         }
-        pl.lookat_ex = lookat({std::sin(phi) * std::cos(theta), std::sin(theta), std::cos(phi) * std::cos(theta)} , {0, 1, 0});
-        pl.draw(data.verts, data.inds, data.len); // sphere
-//        pl.draw(verts, inds, sizeof (inds) / sizeof (size_t)); // cube
-//        pl.draw_lines(data.verts, data.inds, s);
+        {
+            auto kb_enents = getKBchange();
+            pl.eye.x += (kb_enents.countK_a - kb_enents.countK_d) / 10.f ;
+            pl.eye.z += (kb_enents.countK_s - kb_enents.countK_w) / 10.f;
+        }
+        pl.lookat({std::sin(phi) * std::cos(theta), std::sin(theta), std::cos(phi) * std::cos(theta)} , {0, 1, 0});
+//        pl.draw(data.verts, data.inds, data.len); // sphere
+        pl.draw(verts, inds, sizeof (inds) / sizeof (size_t)); // cube
+//        pl.draw_lines(data.verts, data.inds, data.len);
         pl.update();
         std::this_thread::sleep_for(std::chrono::milliseconds(15));
     }

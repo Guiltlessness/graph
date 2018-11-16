@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 #include <cmath>
-
+#include <iostream>
 
 struct edge {
     size_t from;
@@ -29,13 +29,14 @@ static void add(std::map<edge, size_t>& edges, std::vector<vertex>& data, vertex
 }
 
 vrts_ans_inds create_sphere(float R, int num) {
+    float coef_for_image = 0.22f;
     std::vector<vertex> data{
         {{ 1.f, 0.f, 0.f}, {0.5f, 0.5f}}, // 0
         {{-1.f, 0.f, 0.f}, {0.5f, 0.5f}}, // 1
         {{ 0.f, 1.f, 0.f}, {0.5f, 1.f}}, // 2
         {{ 0.f,-1.f, 0.f}, {0.5f, 0.f}}, // 3
-        {{ 0.f, 0.f, 1.f}, {0.1f, 0.5f}}, // 4
-        {{ 0.f, 0.f,-1.f}, {0.9f, 0.5f}}, // 5
+        {{ 0.f, 0.f, 1.f}, {coef_for_image, 0.5f}}, // 4
+        {{ 0.f, 0.f,-1.f}, {1.f-coef_for_image, 0.5f}}, // 5
     };
     std::vector<size_t> queue{
         0,2,5,
@@ -88,9 +89,14 @@ vrts_ans_inds create_sphere(float R, int num) {
                     v.pos.x * v.pos.x +
                     v.pos.y * v.pos.y +
                     v.pos.z * v.pos.z);
-        float coef = R / len;
         for(int i = 0; i < 3; ++i)
-            v.pos[i] *= coef;
+            v.pos[i] /= len;
+
+        v.tex.x = 0.5f + (v.pos.x / 2.f) * (1080.f / 1920.f) - 15.f/1920;
+        v.tex.y = 0.5f + v.pos.y / 2.f;
+
+        for(int i = 0; i < 3; ++i)
+            v.pos[i] *= R;
     }
 
     vertex *vrts = new vertex[data.size()];

@@ -1,5 +1,7 @@
 #include "frame_buf.h"
 
+#include <stdexcept>
+
 pix::pix() {
     b = g = 100;
     a = r = 255;
@@ -14,15 +16,17 @@ pix::pix(uc a1, uc a2, uc a3, uc a4)
 
 frame_buf::frame_buf() {
     fb = open("/dev/fb0", O_WRONLY);
+    if(fb <= 0)
+        throw std::runtime_error("Cannot open dev/fb0");
     struct fb_fix_screeninfo fsinfo;
     if(ioctl(fb, FBIOGET_FSCREENINFO, &fsinfo) < 0) {
-        write(1, "Хуита какаято\n", 27);
+        throw std::runtime_error("Cannot read FSCREENINFO from fb0");
     };
     struct fb_var_screeninfo vsinfo;
     width = fsinfo.line_length / 4;
     height = fsinfo.smem_len /fsinfo.line_length;
     if(ioctl(fb, FBIOGET_VSCREENINFO, &vsinfo) < 0) {
-        write(1, "Хуита какаято\n", 27);
+        throw std::runtime_error("Cannot read VSCREENINFO from fb0");
     };
     high_v = vsinfo.yres /*/ vsinfo.bits_per_pixel*/;
     lenght_v = vsinfo.xres /*/ vsinfo.bits_per_pixel*/;
